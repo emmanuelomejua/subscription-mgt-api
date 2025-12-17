@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { set } from 'mongoose';
 
 import { DB_URI, NODE_ENV } from '../config/env.js';
 
@@ -8,16 +8,18 @@ if(!DB_URI){
 
 const connectDB = async () => {
     try {
+        set('strictQuery', true);
+        
         await mongoose.connect(DB_URI)
 
         console.log(`DB Connection successful on ${NODE_ENV} mode!`)
     } catch (error) {
-        console.log('Something went wrong', error)
+        console.log('DB connection error', error?.message)
         process.exit(1)
     }
 
     mongoose.connection.on('disconnected', () => {
-      log('DB Disconnected!!');
+      console.log('DB Disconnected!!');
     });
 }
 

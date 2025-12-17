@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 import { PORT } from './config/env.js';
 
@@ -8,12 +9,14 @@ import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import subscriptionRouter from './routes/subscription.route.js';
 import connectDB from './database/database.js';
+import errorMiddleware from './middlewares/err.middleware.js';
 
 const app = express();
 
 
 app.use(express.json());
-app.use(express.urlencoded({limit: '50mb'}))
+app.use(express.urlencoded({extended: false, limit: '50mb'}))
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
     res.send('Server is active!!!')
@@ -25,7 +28,9 @@ app.get('/', (req, res) => {
  */
 app.use('api/v1/auth', authRouter);
 app.use('api/v1/users', userRouter);
-app.use('/api/v1/subscriptions', subscriptionRouter)
+app.use('/api/v1/subscriptions', subscriptionRouter);
+
+app.use(errorMiddleware)
 
 
 app.listen(PORT, async () => {
