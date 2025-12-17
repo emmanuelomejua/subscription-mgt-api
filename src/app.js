@@ -7,6 +7,7 @@ import { PORT } from './config/env.js';
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import subscriptionRouter from './routes/subscription.route.js';
+import connectDB from './database/database.js';
 
 const app = express();
 
@@ -27,7 +28,9 @@ app.use('api/v1/users', userRouter);
 app.use('/api/v1/subscriptions', subscriptionRouter)
 
 
-app.listen(PORT, () => {
-    console.log(`Server is active on port ${PORT}`)
+app.listen(PORT, async () => {
+    console.log(`Server is active on port ${PORT}`);
+
+    await connectDB()
 })
 
