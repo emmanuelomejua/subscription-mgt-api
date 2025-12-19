@@ -1,13 +1,16 @@
 import { Router } from "express";
 
-import { getAllUsers, getUser } from "../controllers/user.controller.js";
+import auth from "../middlewares/auth.middleware.js";
+
+import { getAllUsers, getUser, updateUser } from "../controllers/user.controller.js";
 
 const userRouter = Router();
 
-userRouter.get('/', getAllUsers)
+userRouter.get('/:id', auth, getUser);
 
-userRouter.get('/:id', getUser)
+userRouter.get('/', getAllUsers);
 
+userRouter.patch('/:id', updateUser);
 
 export default userRouter;
 

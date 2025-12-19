@@ -11,7 +11,9 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
 
-    const user = await User.findOne(req.params.id).select('-password');
+    const { id } = req.params;
+
+    const user = await User.findById(id);
 
     if(!user){
         const error = new Error('User not found');
@@ -19,6 +21,12 @@ export const getUser = async (req, res) => {
         throw error;
     }
 
-    res.status(200).json({ success: false, data: user})
+    res.status(200).json({ success: true, data: user})
 
 }
+
+
+export const updateUser = async (req, res) => {
+
+}
+
