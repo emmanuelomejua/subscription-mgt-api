@@ -87,6 +87,6 @@ subscriptionSchema.pre('save', function(next){
 })
 
 
-const Subscription = model('Subscriotion', subscriptionSchema);
+const Subscription = model('Subscription', subscriptionSchema);
 
 export default Subscription;

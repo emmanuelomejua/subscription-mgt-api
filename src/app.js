@@ -11,6 +11,7 @@ import userRouter from './routes/user.route.js';
 import subscriptionRouter from './routes/subscription.route.js';
 import connectDB from './database/database.js';
 import errorMiddleware from './middlewares/err.middleware.js';
+import adjectMiddleware from './middlewares/arrject.middlewar.js';
 
 const app = express();
 
@@ -18,7 +19,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: false, limit: '50mb'}))
 app.use(cookieParser());
-app.use(morgan('common'))
+app.use(morgan('common'));
+app.use(adjectMiddleware)
 
 app.get('/', (req, res) => {
     res.send('Server is active!!!')
