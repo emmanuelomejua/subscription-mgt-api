@@ -7,36 +7,61 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from "../config/env.js";
 
 export const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
+
   try {
+    let createdUser;
+
     await session.withTransaction(async () => {
       const { name, email, password } = req.body;
 
-      const userExists = await User.findOne({ email }).session(session);
-      if (userExists) {
-        const error = new Error('User already exists');
-        error.statusCode = 409;
-        throw error;
+      if (!name || !email || !password) {
+        const err = new Error("All fields are required");
+        err.statusCode = 400;
+        throw err;
       }
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const userExists = await User.findOne({ email }).session(session);
+      if (userExists) {
+        const err = new Error("User already exists");
+        err.statusCode = 409;
+        throw err;
+      }
 
-      const newUsers = await User.create([{ email, name, password: hashedPassword }], { session });
-      const token = jwt.sign({ userId: newUsers[0]._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-      res.status(201).json({
-        success: true,
-        message: 'User created successfully!',
-        data: { token, user: newUsers[0] }
-      });
+      const [user] = await User.create(
+        [{ name, email, password: hashedPassword }],
+        { session }
+      );
+
+      createdUser = user;
     });
+
+    // 🔐 Remove password before sending response
+    createdUser.password = undefined;
+
+    const token = jwt.sign(
+      { userId: createdUser._id },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully!",
+      data: {
+        token,
+        user: createdUser,
+      },
+    });
+
   } catch (error) {
-    await session.abortTransaction();
-    throw error;
+    next(error); // ✅ let Express handle it
   } finally {
-    await session.endSession();
+    session.endSession();
   }
-}
+};
+
 
 
 export const signIn = async (req, res) => {
