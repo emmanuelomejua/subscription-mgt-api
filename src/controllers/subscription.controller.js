@@ -1,6 +1,11 @@
 import Subscription from '../models/subscription.model.js';
 
-export const createSubscription = async (req, res) => {
+export const createSubscription = async (req, res, next) => {
+    const subscription = await Subscription.create({
+        ...req.body,
+        user: req.user._id
+    })
 
+    res.status(201).json({ success: true, data: subscription })
 }
 

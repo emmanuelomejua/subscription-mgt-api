@@ -19,7 +19,8 @@ const adjectMiddleware = async (req, res, next) => {
 
             res.end(JSON.stringify({ error: "No bots allowed" }));
 
-            } else {
+            } 
+            else {
 
             res.writeHead(403, { "Content-Type": "application/json" });
 
