@@ -9,3 +9,12 @@ export const createSubscription = async (req, res, next) => {
     res.status(201).json({ success: true, data: subscription })
 }
 
+
+export const getUserSubscription = async (req, res, next) => {
+    if(req.user._id !== req.params.id){
+        const err = new Error("User already exists");
+        err.statusCode = 409;
+        throw err;
+    }
+}
+

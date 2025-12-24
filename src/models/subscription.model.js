@@ -65,7 +65,6 @@ const subscriptionSchema = new Schema(
 
     renewalDate: {
       type: Date,
-      required: true,
       validate: {
         validator: function (val) {
           return val > this.startDate;
@@ -100,11 +99,11 @@ subscriptionSchema.virtual("isExpired").get(function () {
   return this.renewalDate < new Date();
 });
 
+
 // =====================
 // PRE-SAVE HOOK
 // =====================
-// Fixed: non-async function with next()
-subscriptionSchema.pre("save", function (next) {
+subscriptionSchema.pre("save", function () {
   if (!this.renewalDate) {
     const renewalDate = new Date(this.startDate);
 
@@ -126,12 +125,11 @@ subscriptionSchema.pre("save", function (next) {
     this.renewalDate = renewalDate;
   }
 
-  if (this.renewalDate < new Date()) {
+  if (this.renewalDate && this.renewalDate < new Date()) {
     this.status = "expired";
   }
-
-  next();
 });
+
 
 // =====================
 // MODEL
